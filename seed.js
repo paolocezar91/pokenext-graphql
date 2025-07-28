@@ -31,23 +31,30 @@ const acquireDataFromFiles = (resource) => {
     return resourcePage.results.map(p => getResourceById(resource, getIdFromUrlSubstring(p.url)));
 };
 
-async function seed(rd) {
+// gets all arguments as resources
+const resourcesArg = process.argv.slice(2);
+
+// and seed all of them
+resourcesArg.forEach(resourceArg => {
+    console.log(`Resource selected: ${resourceArg}`);
+    const resourceDir = path.join(dataDir, resourceArg);
+    if(fs.readdirSync(resourceDir)) {
+        console.log(`Resource directory located: ${resourceDir}`);
+        const resourceData = acquireDataFromFiles(resourceArg)
+        seed(resourceData, resourceArg);
+    }
+})
+
+async function seed(rd, ra) {
     // --- MongoDB connection and seeding ---
-    const MONGO_URL = process.env.MONGO_URL || 'mongodb+srv://pcezar87:mo2z05X9zYH5gvv6@cluster0.mcibv01.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-    const DB_NAME = process.env.DB_NAME || 'pokenext';
+    const MONGO_URL = process.env.MONGO_URL;
+    const DB_NAME = process.env.DB_NAME;
     const client = new MongoClient(MONGO_URL);
     try {
         await client.connect();
         const db = client.db(DB_NAME);
-        // Insert users
-        await db.collection('users').deleteMany({});
-        await db.collection('users').insertMany([
-            { email: "user1@example.com" },
-            { email: "user2@example.com" }
-        ]);
-        // Insert pokemon
-        await db.collection(resourceArg).deleteMany({});
-        await db.collection(resourceArg).insertMany(rd);
+        await db.collection(ra).deleteMany({});
+        await db.collection(ra).insertMany(rd);
         console.log('Database seeded successfully!');
     } catch (err) {
         console.error('Seeding error:', err);
@@ -55,13 +62,3 @@ async function seed(rd) {
         await client.close();
     }
 }
-
-const resourceArg = process.argv[2];
-console.log(`Resource selected: ${resourceArg}`);
-const resourceDir = path.join(dataDir, resourceArg);
-if(fs.readdirSync(resourceDir)) {
-    console.log(`Resource directory located: ${resourceDir}`);
-    const resourceData = acquireDataFromFiles(resourceArg)
-    seed(resourceData);
-}
-
