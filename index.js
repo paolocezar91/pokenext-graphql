@@ -12,6 +12,8 @@ const { abilitiesResolvers, abilitiesTypeDefs } = require('./resolvers/poke-api/
 dotenv.config();
 const MONGO_URL = process.env.MONGO_URL;
 const DB_NAME = process.env.DB_NAME;
+const PORT = process.env.PORT;
+
 
 const clientOptions = {
   useNewUrlParser: true,
@@ -57,7 +59,7 @@ async function run() {
       resolvers,
     });
   
-    server.listen({ port: 5678 }).then(({ url }) => {
+    server.listen({ port: PORT }).then(({ url }) => {
       console.log(`🚀 Server ready at ${url}`);
     });
 }
