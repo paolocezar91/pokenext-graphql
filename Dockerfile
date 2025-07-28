@@ -14,4 +14,4 @@ COPY . .
 
 EXPOSE 5678
 
-CMD ["node", "index.js"]
+CMD ["npm", "run", "start"]
