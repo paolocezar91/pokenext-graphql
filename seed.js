@@ -1,7 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const { MongoClient } = require('mongodb');
-const dataDir = path.join(__dirname, '../data/api/v2');
+const dataDir = path.join(__dirname, '../pokenext-express/data/api/v2');
+const dotenv= require('dotenv');
+dotenv.config();
+const MONGO_URL = process.env.MONGO_URL;
+const DB_NAME = process.env.DB_NAME;
+console.log({MONGO_URL,DB_NAME})
 
 const getIdFromUrlSubstring = (url = '') => url.split("/")[url.split("/").length - 2];
 
@@ -47,8 +52,7 @@ resourcesArg.forEach(resourceArg => {
 
 async function seed(rd, ra) {
     // --- MongoDB connection and seeding ---
-    const MONGO_URL = process.env.MONGO_URL;
-    const DB_NAME = process.env.DB_NAME;
+    
     const client = new MongoClient(MONGO_URL);
     try {
         await client.connect();
