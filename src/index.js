@@ -10,7 +10,8 @@ const { movesTypeDefs, movesResolvers  } = require('./resolvers/poke-api/moves.r
 const { evolutionChainResolvers, evolutionChainTypeDefs } = require('./resolvers/poke-api/evolution-chain.resolver');
 const { abilitiesResolvers, abilitiesTypeDefs } = require('./resolvers/poke-api/ability.resolver');
 const { machinesTypeDefs, machinesResolvers } = require('./resolvers/poke-api/machines.resolver');
-dotenv.config();
+const { moveTargetTypeDefs, moveTargetResolvers } = require('./resolvers/poke-api/move-target.resolver');
+dotenv.config({ path: "./.env.test"});
 const MONGO_URL = process.env.MONGO_URL;
 const DB_NAME = process.env.DB_NAME;
 const PORT = process.env.PORT;
@@ -42,7 +43,8 @@ async function run() {
       movesTypeDefs,
       evolutionChainTypeDefs,
       abilitiesTypeDefs,
-      machinesTypeDefs
+      machinesTypeDefs,
+      moveTargetTypeDefs
     ];
 
     const resolvers = [
@@ -54,7 +56,8 @@ async function run() {
       movesResolvers,
       evolutionChainResolvers,
       abilitiesResolvers,
-      machinesResolvers
+      machinesResolvers,
+      moveTargetResolvers
     ];
 
     const server = new ApolloServer({
