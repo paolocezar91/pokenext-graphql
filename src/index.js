@@ -11,11 +11,11 @@ const { evolutionChainResolvers, evolutionChainTypeDefs } = require('./resolvers
 const { abilitiesResolvers, abilitiesTypeDefs } = require('./resolvers/poke-api/ability.resolver');
 const { machinesTypeDefs, machinesResolvers } = require('./resolvers/poke-api/machines.resolver');
 const { moveTargetTypeDefs, moveTargetResolvers } = require('./resolvers/poke-api/move-target.resolver');
-dotenv.config({ path: "./.env.test"});
+dotenv.config({ path: "./.env"});
 const MONGO_URL = process.env.MONGO_URL;
 const DB_NAME = process.env.DB_NAME;
 const PORT = process.env.PORT;
-
+const ENVIRONMENT = process.env.ENVIRONMENT;
 
 const clientOptions = {
   useNewUrlParser: true,
@@ -66,7 +66,7 @@ async function run() {
     });
   
     server.listen({ port: PORT }).then(({ url }) => {
-      console.log(`🚀 Server ready at ${url}`);
+      console.log(`🚀 Server ready at ${url} in ${ENVIRONMENT}`);
     });
 }
 run().catch(console.dir);
