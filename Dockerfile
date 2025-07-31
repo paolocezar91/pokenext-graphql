@@ -3,7 +3,7 @@ FROM node:18
 WORKDIR /app
 
 # Copy package files first for better layer caching
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .env ./
 
 RUN npm ci
 
