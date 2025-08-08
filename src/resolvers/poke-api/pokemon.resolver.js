@@ -3,9 +3,9 @@ const Pokemon = require('../../models/poke-api/pokemon.model');
 
 const pokemonResolvers = {
   Query: {
-    pokemons: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
+    pokemons: async (_, { limit = 50, offset = 0, name = '', types = '', id_limit = 1025 }) => {
       const projection = { id: 1, name: 1, stats: 1, types: 1, versions: 1  }
-      const query = { id: { $lte: 1025 } };
+      const query = { id: { $lte: id_limit } };
       if(name) {
         query.name = { $regex: name, $options: 'i' };
       }
