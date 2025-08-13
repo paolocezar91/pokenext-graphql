@@ -34,7 +34,7 @@ const pokemonResolvers = {
       return pokemon;
     },
     pokemonsByIds: async (_, { ids }) => {
-      const query = { id: { $in: ids.map(Number) } };
+      const query = { id: { $in: ids[0].split(",").map(Number) } };
       return await Pokemon.find(query).lean();
     }
   },

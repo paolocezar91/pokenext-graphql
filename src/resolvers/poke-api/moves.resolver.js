@@ -12,7 +12,7 @@ const movesResolvers = {
       return await Moves.findOne(query).lean();
     },
     movesByIds: async (_, { ids }) => {
-      const query = { id: { $in: ids.map(Number) } };
+      const query = { id: { $in: ids[0].split(",").map(Number) } };
       return await Moves.find(query).sort({id: 1}).lean();
     }
   },

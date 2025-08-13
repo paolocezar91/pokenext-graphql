@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { MongoClient } = require('mongodb');
-// const dataDir = path.join(__dirname, './data/api/v2');
-const dataDir = path.join(__dirname, '../pokenext-express/data/api/v2');
+const dataDir = path.join(__dirname, './data/api/v2');
+// const dataDir = path.join(__dirname, '../pokenext-express/data/api/v2');
 const dotenv= require('dotenv');
 dotenv.config();
 const MONGO_URL = process.env.MONGO_URL;
