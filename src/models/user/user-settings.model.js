@@ -5,6 +5,7 @@ const userSettingsSchema = new mongoose.Schema({
   artwork_url: String,
   description_lang: String,
   list_table: Boolean,
+  show_settings: Boolean,
   show_column: String,
   show_show_column: Boolean,
   show_thumb_table: Boolean,

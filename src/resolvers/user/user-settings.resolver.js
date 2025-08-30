@@ -17,6 +17,7 @@ const userSettingsResolvers = {
         description_lang: rest.descriptionLang,
         list_table: rest.listTable,
         show_column: rest.showColumn,
+        show_settings: rest.showSettings,
         show_show_column: rest.showShowColumn,
         show_thumb_table: rest.showThumbTable,
         thumb_label_list: rest.thumbLabelList,
@@ -46,6 +47,7 @@ const userSettingsResolvers = {
     descriptionLang: parent => parent.description_lang,
     listTable: parent => parent.list_table,
     showColumn: parent => parent.show_column,
+    showSettings: parent => parent.show_settings,
     showShowColumn: parent => parent.show_show_column,
     showThumbTable: parent => parent.show_thumb_table,
     thumbLabelList: parent => parent.thumb_label_list,
@@ -74,6 +76,7 @@ const userSettingsTypeDefs = gql`
     descriptionLang: String
     listTable: Boolean
     showColumn: String
+    showSettings: Boolean
     showShowColumn: Boolean
     showThumbTable: Boolean
     thumbLabelList: String
@@ -99,6 +102,7 @@ const userSettingsTypeDefs = gql`
     descriptionLang: String
     listTable: Boolean
     showColumn: String
+    showSettings: Boolean
     showShowColumn: Boolean
     showThumbTable: Boolean
     thumbLabelList: String
