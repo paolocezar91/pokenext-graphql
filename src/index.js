@@ -1,26 +1,21 @@
-const dotenv= require('dotenv');
-const { ApolloServer } = require('apollo-server');
-const mongoose = require('mongoose');
-const { userTypeDefs, userResolvers } = require('./resolvers/user/user.resolver');
-const { userSettingsTypeDefs, userSettingsResolvers } = require('./resolvers/user/user-settings.resolver');
-const { pokemonTypeDefs, pokemonResolvers } = require('./resolvers/poke-api/pokemon.resolver');
-const { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers } = require('./resolvers/poke-api/pokemon-species.resolver');
-const { typesTypeDefs, typesResolvers } = require('./resolvers/poke-api/types.resolver');
-const { movesTypeDefs, movesResolvers  } = require('./resolvers/poke-api/moves.resolver');
-const { evolutionChainResolvers, evolutionChainTypeDefs } = require('./resolvers/poke-api/evolution-chain.resolver');
-const { abilitiesResolvers, abilitiesTypeDefs } = require('./resolvers/poke-api/ability.resolver');
-const { machinesTypeDefs, machinesResolvers } = require('./resolvers/poke-api/machines.resolver');
-const { moveTargetTypeDefs, moveTargetResolvers } = require('./resolvers/poke-api/move-target.resolver');
-const { pokemonFormTypeDefs, pokemonFormResolvers } = require('./resolvers/poke-api/pokemon-form.resolver');
+
+const dotenv = require('dotenv');
 dotenv.config({ path: "./.env"});
+const { ApolloServer } = require('apollo-server-express');
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const { createComplexityLimitRule } = require('graphql-validation-complexity');
+const depthLimit = require('graphql-depth-limit');
 const MONGO_URL = process.env.MONGO_URL;
 const DB_NAME = process.env.DB_NAME;
 const PORT = process.env.PORT;
 const ENVIRONMENT = process.env.ENVIRONMENT;
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
+const {resolvers, typeDefs} = require('./resolvers');
 
 const clientOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   dbName: DB_NAME,
   serverApi: {
     version: '1',
@@ -30,46 +25,38 @@ const clientOptions = {
 };
 
 async function run() {
-    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
     await mongoose.connect(MONGO_URL, clientOptions)
     await mongoose.connection.db.admin().command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-    const typeDefs = [
-      userTypeDefs,
-      userSettingsTypeDefs,
-      pokemonTypeDefs,
-      pokemonSpeciesTypeDefs,
-      typesTypeDefs,
-      movesTypeDefs,
-      evolutionChainTypeDefs,
-      abilitiesTypeDefs,
-      machinesTypeDefs,
-      moveTargetTypeDefs,
-      pokemonFormTypeDefs
-    ];
-
-    const resolvers = [
-      userResolvers,
-      userSettingsResolvers,
-      pokemonResolvers,
-      pokemonSpeciesResolvers,
-      typesResolvers,
-      movesResolvers,
-      evolutionChainResolvers,
-      abilitiesResolvers,
-      machinesResolvers,
-      moveTargetResolvers,
-      pokemonFormResolvers
-    ];
+    const app = express();
+    app.use(helmet()); // Secure HTTP headers
+    if(ENVIRONMENT !== 'sandbox') {
+      app.use(cors({ origin: allowedOrigins })); // Restrict CORS
+    }
+    app.disable('x-powered-by'); // Hide Express info
 
     const server = new ApolloServer({
       typeDefs,
       resolvers,
+      introspection: ENVIRONMENT !== 'production', // Disable introspection in prod
+      validationRules: [
+        depthLimit(5), // Limit query depth
+        createComplexityLimitRule(2000, {
+          onCost: (cost) => { console.log('Query cost:', cost); },
+          formatErrorMessage: cost => `Query is too complex: ${cost}`
+        })
+      ],
+      context: ({ req }) => {
+        // Add authentication info here
+        return { user: req.user };
+      }
     });
-  
-    server.listen({ port: PORT }).then(({ url }) => {
-      console.log(`🚀 Server ready at ${url} in ${ENVIRONMENT}`);
+    await server.start();
+    server.applyMiddleware({ app });
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath} in ${ENVIRONMENT}`);
     });
 }
 run().catch(console.dir);
