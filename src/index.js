@@ -4,6 +4,7 @@ dotenv.config({ path: "./.env"});
 const { ApolloServer } = require('apollo-server-express');
 const express = require('express');
 const helmet = require('helmet');
+const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { createComplexityLimitRule } = require('graphql-validation-complexity');
@@ -30,10 +31,14 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     const app = express();
-    app.use(helmet()); // Secure HTTP headers
+    if(ENVIRONMENT === 'sandbox') {
+      app.use(morgan())
+    }
     if(ENVIRONMENT !== 'sandbox') {
+      app.use(helmet()); // Secure HTTP headers
       app.use(cors({ origin: allowedOrigins })); // Restrict CORS
     }
+
     app.disable('x-powered-by'); // Hide Express info
 
     const server = new ApolloServer({
@@ -41,8 +46,8 @@ async function run() {
       resolvers,
       introspection: ENVIRONMENT !== 'production', // Disable introspection in prod
       validationRules: [
-        depthLimit(5), // Limit query depth
-        createComplexityLimitRule(2000, {
+        depthLimit(7), // Limit query depth
+        createComplexityLimitRule(30000, {
           onCost: (cost) => { console.log('Query cost:', cost); },
           formatErrorMessage: cost => `Query is too complex: ${cost}`
         })
