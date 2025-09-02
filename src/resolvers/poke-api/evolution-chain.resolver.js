@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const EvolutionChain = require('../../models/poke-api/evolution-chain.model');
 
 const evolutionChainResolvers = {

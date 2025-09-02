@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const MoveTarget = require('../../models/poke-api/move-target.model');
 
 const moveTargetResolvers = {

@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const Types = require('../../models/poke-api/types.model');
 
 const typesResolvers = {

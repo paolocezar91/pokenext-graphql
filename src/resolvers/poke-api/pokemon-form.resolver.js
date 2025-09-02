@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const PokemonForm = require('../../models/poke-api/pokemon-form.model');
 
 const pokemonFormResolvers = {
