@@ -1,10 +1,10 @@
-const { gql } = require('apollo-server-express');
-const EvolutionChain = require('../../models/poke-api/evolution-chain.model');
+const { gql } = require("apollo-server-express");
+const EvolutionChain = require("../../models/poke-api/evolution-chain.model");
 
 const evolutionChainResolvers = {
   Query: {
-    evolutionChain: async (_, { id  }) => {
-      return await EvolutionChain.findOne({id}).lean();
+    evolutionChain: async (_, { id }) => {
+      return await EvolutionChain.findOne({ id }).lean();
     },
   },
 };

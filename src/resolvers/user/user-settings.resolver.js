@@ -1,12 +1,12 @@
-const { gql } = require('apollo-server-express');
-const UserSettings = require('../../models/user/user-settings.model');
-const User = require('../../models/user/user.model');
+const { gql } = require("apollo-server-express");
+const UserSettings = require("../../models/user/user-settings.model");
+const User = require("../../models/user/user.model");
 
 const userSettingsResolvers = {
   Query: {
     userSettings: async (_, { user_id }) => {
       return UserSettings.findOne({ user_id });
-    }
+    },
   },
   Mutation: {
     upsertUserSettings: async (_, { input }) => {
@@ -24,18 +24,20 @@ const userSettingsResolvers = {
         thumb_size_list: rest.thumbSizeList,
         type_artwork_url: rest.typeArtworkUrl,
         filter: rest.filter,
-        sorting: rest?.sorting
+        sorting: rest?.sorting,
       };
       // Remove undefined fields
-      Object.keys(update).forEach(key => update[key] === undefined && delete update[key]);
-      
+      Object.keys(update).forEach(
+        (key) => update[key] === undefined && delete update[key],
+      );
+
       const settings = await UserSettings.findOneAndUpdate(
         { user_id: userId },
         { $set: update, $setOnInsert: { user_id: userId } },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
       return settings;
-    }
+    },
   },
   UserSettings: {
     user: async (parent) => {
@@ -43,19 +45,19 @@ const userSettingsResolvers = {
       return User.findById(parent.user_id);
     },
     // Optionally, map snake_case to camelCase for GraphQL output
-    artworkUrl: parent => parent.artwork_url,
-    descriptionLang: parent => parent.description_lang,
-    listTable: parent => parent.list_table,
-    showColumn: parent => parent.show_column,
-    showSettings: parent => parent.show_settings,
-    showShowColumn: parent => parent.show_show_column,
-    showThumbTable: parent => parent.show_thumb_table,
-    thumbLabelList: parent => parent.thumb_label_list,
-    thumbSizeList: parent => parent.thumb_size_list,
-    typeArtworkUrl: parent => parent.type_artwork_url,
-    filter: parent => parent.filter,
-    sorting: parent => parent.sorting
-  }
+    artworkUrl: (parent) => parent.artwork_url,
+    descriptionLang: (parent) => parent.description_lang,
+    listTable: (parent) => parent.list_table,
+    showColumn: (parent) => parent.show_column,
+    showSettings: (parent) => parent.show_settings,
+    showShowColumn: (parent) => parent.show_show_column,
+    showThumbTable: (parent) => parent.show_thumb_table,
+    thumbLabelList: (parent) => parent.thumb_label_list,
+    thumbSizeList: (parent) => parent.thumb_size_list,
+    typeArtworkUrl: (parent) => parent.type_artwork_url,
+    filter: (parent) => parent.filter,
+    sorting: (parent) => parent.sorting,
+  },
 };
 
 const userSettingsTypeDefs = gql`
