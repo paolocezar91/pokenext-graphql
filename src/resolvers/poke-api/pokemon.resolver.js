@@ -1,30 +1,48 @@
 const { gql } = require("apollo-server-express");
 const Pokemon = require("../../models/poke-api/pokemon.model");
+const { getCache, setCache } = require("../../redis");
 
 const pokemonResolvers = {
   Query: {
     pokemons: async (
       _,
-      { limit = 50, offset = 0, name = "", types = "", id_limit = 1025 },
+      { limit = 50, offset = 0, name = "", types = "", id_limit = 151 }
     ) => {
-      const projection = { id: 1, name: 1, stats: 1, types: 1, versions: 1 };
-      const query = { id: { $lte: id_limit } };
-      if (name) {
-        query.name = { $regex: name, $options: "i" };
-      }
+      const redisKey = generateCacheKey({
+        limit,
+        offset,
+        name,
+        types,
+        id_limit,
+      });
+      return getCache(redisKey, async () => {
+        const projection = {
+          id: 1,
+          name: 1,
+          stats: 1,
+          types: 1,
+          versions: 1,
+        };
+        const query = { id: { $lte: id_limit } };
+        if (name) {
+          query.name = { $regex: name, $options: "i" };
+        }
 
-      if (types) {
-        query.$and = types
-          .split(",")
-          .map((type) => ({ "types.type.name": type }));
-      }
+        if (types) {
+          query.$and = types
+            .split(",")
+            .map((type) => ({ "types.type.name": type }));
+        }
 
-      const pokemon = await Pokemon.find(query, projection)
-        .skip(offset)
-        .limit(limit)
-        .lean();
+        const pokemon = await Pokemon.find(query, projection)
+          .skip(offset)
+          .limit(limit)
+          .lean();
 
-      return pokemon;
+        await setCache(redisKey, pokemon);
+
+        return pokemon;
+      });
     },
     pokemonById: async (_, { id, name }) => {
       const query = name ? { name } : { id };
@@ -184,5 +202,21 @@ const pokemonTypeDefs = gql`
     pokemonById(id: ID, name: String): Pokemon
   }
 `;
+
+function generateCacheKey(params) {
+  const { limit, offset, name, types, id_limit } = params;
+
+  // Normalize parameters
+  const normalizedName = name.toLowerCase().trim();
+  const normalizedTypes = types
+    ? types
+        .split(",")
+        .map((t) => t.trim().toLowerCase())
+        .sort()
+        .join(",")
+    : "";
+
+  return `pokemon:${id_limit}:${limit}:${offset}:${normalizedName}:${normalizedTypes}`;
+}
 
 module.exports = { pokemonTypeDefs, pokemonResolvers };

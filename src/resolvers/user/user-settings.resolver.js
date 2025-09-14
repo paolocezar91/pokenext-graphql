@@ -1,11 +1,21 @@
 const { gql } = require("apollo-server-express");
 const UserSettings = require("../../models/user/user-settings.model");
 const User = require("../../models/user/user.model");
+const { getRedisClient, DEFAULT_EXPIRATION } = require("../../redis");
+const redis = getRedisClient();
 
 const userSettingsResolvers = {
   Query: {
     userSettings: async (_, { user_id }) => {
-      return UserSettings.findOne({ user_id });
+      try {
+        const cachedSettings = await redis.get(`user:${user_id}:settings`);
+        if (!cachedSettings) {
+          return await UserSettings.findOne({ user_id });
+        }
+        return UserSettings.hydrate(JSON.parse(cachedSettings));
+      } catch (error) {
+        throw Error(":: Redis - Cache error", { error });
+      }
     },
   },
   Mutation: {
@@ -26,15 +36,22 @@ const userSettingsResolvers = {
         filter: rest.filter,
         sorting: rest?.sorting,
       };
+
       // Remove undefined fields
       Object.keys(update).forEach(
-        (key) => update[key] === undefined && delete update[key],
+        (key) => update[key] === undefined && delete update[key]
       );
 
       const settings = await UserSettings.findOneAndUpdate(
         { user_id: userId },
         { $set: update, $setOnInsert: { user_id: userId } },
-        { new: true, upsert: true },
+        { new: true, upsert: true }
+      );
+
+      await redis.setEx(
+        `user:${userId}:settings`,
+        DEFAULT_EXPIRATION,
+        JSON.stringify(settings.toObject())
       );
       return settings;
     },
