@@ -15,7 +15,7 @@ services:
     environment:
       MONGO_URL: mongodb://mongodb:27017/mydb
     volumes:
-    - ./data:/app/data
+      - ./data:/app/data
 
   # redis:
   #   image: redis:latest
@@ -29,7 +29,6 @@ services:
   #     - "4006:4006"
   #   depends_on:
   #     - redis
-
 
 volumes:
   mongo_data:

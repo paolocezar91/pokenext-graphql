@@ -1,5 +1,5 @@
-const { gql } = require('apollo-server-express');
-const Moves = require('../../models/poke-api/moves.model');
+const { gql } = require("apollo-server-express");
+const Moves = require("../../models/poke-api/moves.model");
 
 const movesResolvers = {
   Query: {
@@ -13,8 +13,8 @@ const movesResolvers = {
     },
     movesByIds: async (_, { ids }) => {
       const query = { id: { $in: ids[0].split(",").map(Number) } };
-      return await Moves.find(query).sort({id: 1}).lean();
-    }
+      return await Moves.find(query).sort({ id: 1 }).lean();
+    },
   },
 };
 

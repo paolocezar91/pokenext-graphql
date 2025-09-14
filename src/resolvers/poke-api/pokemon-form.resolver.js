@@ -1,12 +1,12 @@
-const { gql } = require('apollo-server-express');
-const PokemonForm = require('../../models/poke-api/pokemon-form.model');
+const { gql } = require("apollo-server-express");
+const PokemonForm = require("../../models/poke-api/pokemon-form.model");
 
 const pokemonFormResolvers = {
   Query: {
     pokemonFormByIds: async (_, { ids }) => {
       const query = { id: { $in: ids.map(Number) } };
-      return await PokemonForm.find(query).sort({id: 1}).lean();
-    }
+      return await PokemonForm.find(query).sort({ id: 1 }).lean();
+    },
   },
 };
 

@@ -1,12 +1,12 @@
-const { gql } = require('apollo-server-express');
-const User = require('../../models/user/user.model');
+const { gql } = require("apollo-server-express");
+const User = require("../../models/user/user.model");
 
 const userResolvers = {
   Query: {
     users: async () => {
       return await User.find({});
     },
-    user: async (_, { email }) => await User.findOne({ email })
+    user: async (_, { email }) => await User.findOne({ email }),
   },
   Mutation: {
     createUser: async (_, { email }) => {
@@ -19,13 +19,13 @@ const userResolvers = {
     deleteUser: async (_, { id }) => {
       await User.findByIdAndDelete(id);
       return true;
-    }
+    },
   },
   User: {
     id: (parent) => {
-      return parent._id.toString()
-    }
-  }
+      return parent._id.toString();
+    },
+  },
 };
 
 const userTypeDefs = gql`

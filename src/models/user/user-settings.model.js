@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSettingsSchema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true },
   artwork_url: String,
   description_lang: String,
   list_table: Boolean,
@@ -14,12 +14,14 @@ const userSettingsSchema = new mongoose.Schema({
   type_artwork_url: String,
   filter: {
     name: String,
-    types: String
+    types: String,
   },
-  sorting: [{
-    key: String,
-    dir: String
-  }]
+  sorting: [
+    {
+      key: String,
+      dir: String,
+    },
+  ],
 });
 
-module.exports = mongoose.model('UserSettings', userSettingsSchema);
+module.exports = mongoose.model("UserSettings", userSettingsSchema);

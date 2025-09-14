@@ -1,13 +1,11 @@
-const { gql } = require('apollo-server-express');
-const Types = require('../../models/poke-api/types.model');
+const { gql } = require("apollo-server-express");
+const Types = require("../../models/poke-api/types.model");
 
 const typesResolvers = {
   Query: {
     types: async () => {
       const projection = { id: 1, name: 1 };
-      const types = await Types.find({}, projection)
-        .limit(18)
-        .lean();
+      const types = await Types.find({}, projection).limit(18).lean();
 
       return types;
     },
@@ -28,7 +26,7 @@ const typesTypeDefs = gql`
   type PokemonDetails {
     pokemon: Details
   }
-  
+
   type PokemonType {
     id: Int
     name: String

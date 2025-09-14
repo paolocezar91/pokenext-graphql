@@ -1,12 +1,12 @@
-const { gql } = require('apollo-server-express');
-const MoveTarget = require('../../models/poke-api/move-target.model');
+const { gql } = require("apollo-server-express");
+const MoveTarget = require("../../models/poke-api/move-target.model");
 
 const moveTargetResolvers = {
   Query: {
     moveTargetById: async (_, { id, name }) => {
       const query = name ? { name } : { id };
       const moveTarget = await MoveTarget.findOne(query).lean();
-      return moveTarget
+      return moveTarget;
     },
   },
 };
