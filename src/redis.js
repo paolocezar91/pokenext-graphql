@@ -16,11 +16,7 @@ function getRedisClient() {
   if (!client) {
     // Use env vars, fallback to Docker Compose defaults
     const redisUrl = process.env.REDIS_URL;
-    const redisPassword = process.env.REDIS_PASSWORD;
     const options = { url: redisUrl };
-    if (redisPassword) {
-      options.password = redisPassword;
-    }
     client = redis.createClient(options);
     console.log(`:: Redis - Redis client created. URL: ${redisUrl}`);
     client.on("error", (err) => console.error("Redis Client Error", err));
