@@ -14,9 +14,25 @@ let client;
  */
 function getRedisClient() {
   if (!client) {
+    let options;
     // Use env vars, fallback to Docker Compose defaults
-    const redisUrl = process.env.REDIS_URL;
-    const options = { url: redisUrl };
+    let redisUrl = "";
+    if (process.env.ENVIRONMENT === "test") {
+      redisUrl = process.env.REDIS_URL;
+      options = {
+        username: process.env.REDIS_USER,
+        password: process.env.REDIS_PWD,
+        socket: {
+          host: redisUrl,
+          port: process.env.REDIS_PORT,
+        },
+      };
+    }
+
+    if (process.env.ENVIRONMENT === "sandbox") {
+      redisUrl = `${process.env.REDIS_URL}:${process.env.REDIS_PORT}`;
+      options = { url: redisUrl };
+    }
     client = redis.createClient(options);
     console.log(`:: Redis - Redis client created. URL: ${redisUrl}`);
     client.on("error", (err) => console.error("Redis Client Error", err));
