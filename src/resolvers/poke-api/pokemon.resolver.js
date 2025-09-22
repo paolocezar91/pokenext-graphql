@@ -6,7 +6,7 @@ const pokemonResolvers = {
   Query: {
     pokemons: async (
       _,
-      { limit = 50, offset = 0, name = "", types = "", id_limit = 151 }
+      { limit = 50, offset = 0, name = "", types = "", id_limit = 1025 }
     ) => {
       const redisKey = generateCacheKey({
         limit,

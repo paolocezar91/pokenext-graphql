@@ -64,6 +64,7 @@ async function getApolloServer() {
           return new Error("Internal server error");
         }
       }
+      console.log(error);
       return error;
     },
   });
