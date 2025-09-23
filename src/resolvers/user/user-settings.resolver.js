@@ -1,26 +1,35 @@
 const { gql } = require("apollo-server-express");
 const UserSettings = require("../../models/user/user-settings.model");
 const User = require("../../models/user/user.model");
-const { getRedisClient, DEFAULT_EXPIRATION } = require("../../redis");
+const {
+  getRedisClient,
+  DEFAULT_EXPIRATION,
+  getCache,
+  setCache,
+} = require("../../redis");
 const redis = getRedisClient();
 
 const userSettingsResolvers = {
   Query: {
     userSettings: async (_, { user_id }) => {
-      try {
-        const cachedSettings = await redis.get(`user:${user_id}:settings`);
-        if (!cachedSettings) {
-          return await UserSettings.findOne({ user_id });
-        }
-        return UserSettings.hydrate(JSON.parse(cachedSettings));
-      } catch (error) {
-        throw Error(":: Redis - Cache error", { error });
-      }
+      return getCache(`user:${user_id}:settings`, async () => {
+        const settings = await UserSettings.findOne({ user_id });
+        setCache(`user:${user_id}:settings`, settings);
+        return settings;
+      }).then((cachedSettings) => {
+        return UserSettings.hydrate(cachedSettings);
+      });
     },
   },
   Mutation: {
-    upsertUserSettings: async (_, { input }) => {
+    upsertUserSettings: async (_, { input }, ctx) => {
       const { userId, ...rest } = input;
+      const { user } = ctx;
+      const foundUser = await User.findOne({ _id: userId });
+
+      if (userId !== foundUser.id || user.email !== foundUser.email) {
+        throw "Not authorized";
+      }
 
       const update = {
         artwork_url: rest.artworkUrl,

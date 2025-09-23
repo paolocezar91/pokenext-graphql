@@ -9,16 +9,41 @@ const clientOptions = {
     strict: true,
     deprecationErrors: true,
   },
+  tls: process.env.NODE_ENV === "production", // Enable TLS in production
+  tlsAllowInvalidCertificates: false,
+  retryWrites: true,
+  w: "majority",
 };
 
 async function connectToMongo() {
-  await mongoose.connect(MONGO_URL, clientOptions);
-  await mongoose.connection.db.admin().command({ ping: 1 });
-  console.log(
-    ":: MongoDB - Pinged your deployment. You successfully connected to MongoDB!"
-  );
+  try {
+    await mongoose.connect(MONGO_URL, clientOptions);
+    await mongoose.connection.db.admin().command({ ping: 1 });
+    console.log(
+      ":: MongoDB - Pinged your deployment. You successfully connected to MongoDB!"
+    );
+  } catch (error) {
+    console.error(":: MongoDB - Connection failed:", error.message);
+    throw error;
+  }
 }
+
+// Handle connection events
+mongoose.connection.on("error", (err) => {
+  console.error(":: MongoDB - Connection error:", err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log(":: MongoDB - Disconnected");
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  process.exit(0);
+});
 
 module.exports = {
   connectToMongo,
+  mongoose,
 };

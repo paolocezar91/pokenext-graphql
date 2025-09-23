@@ -33,6 +33,7 @@ const {
   pokemonFormTypeDefs,
   pokemonFormResolvers,
 } = require("./poke-api/pokemon-form.resolver");
+const { itemTypeDefs, itemResolvers } = require("./poke-api/item.resolver");
 
 const typeDefs = [
   userTypeDefs,
@@ -46,6 +47,7 @@ const typeDefs = [
   machinesTypeDefs,
   moveTargetTypeDefs,
   pokemonFormTypeDefs,
+  itemTypeDefs,
 ];
 
 const resolvers = [
@@ -60,6 +62,7 @@ const resolvers = [
   machinesResolvers,
   moveTargetResolvers,
   pokemonFormResolvers,
+  itemResolvers,
 ];
 
 module.exports = { resolvers, typeDefs };

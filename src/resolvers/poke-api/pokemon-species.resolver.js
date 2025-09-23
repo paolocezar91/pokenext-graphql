@@ -11,12 +11,7 @@ const pokemonSpeciesResolvers = {
 };
 
 const pokemonSpeciesTypeDefs = gql`
-  type Color {
-    name: String
-    url: String
-  }
-
-  type EggGroup {
+  type NamedApiResource {
     name: String
     url: String
   }
@@ -25,97 +20,47 @@ const pokemonSpeciesTypeDefs = gql`
     url: String
   }
 
-  type EvolvesFromSpecies {
-    name: String
-    url: String
-  }
-
-  type FlavorTextLanguage {
-    name: String
-    url: String
-  }
-
-  type FlavorTextVersion {
-    name: String
-    url: String
-  }
-
   type FlavorTextEntry {
     flavor_text: String
-    language: FlavorTextLanguage
-    version: FlavorTextVersion
-  }
-
-  type GenusLanguage {
-    name: String
-    url: String
+    language: NamedApiResource
+    version: NamedApiResource
   }
 
   type Genus {
     genus: String
-    language: GenusLanguage
-  }
-
-  type Generation {
-    name: String
-    url: String
-  }
-
-  type GrowthRate {
-    name: String
-    url: String
-  }
-
-  type Habitat {
-    name: String
-    url: String
-  }
-
-  type NameLanguage {
-    name: String
-    url: String
+    language: NamedApiResource
   }
 
   type NameEntry {
-    language: NameLanguage
+    language: NamedApiResource
     name: String
-  }
-
-  type Shape {
-    name: String
-    url: String
-  }
-
-  type VarietyPokemon {
-    name: String
-    url: String
   }
 
   type Variety {
     is_default: Boolean
-    pokemon: VarietyPokemon
+    pokemon: NamedApiResource
   }
 
   type FormDescription {
     description: String
-    language: NameLanguage
+    language: NamedApiResource
   }
 
   type PokemonSpecies {
     base_happiness: Int
     capture_rate: Int
-    color: Color
-    egg_groups: [EggGroup]
+    color: NamedApiResource
+    egg_groups: [NamedApiResource]
     evolution_chain: EvolutionChain
-    evolves_from_species: EvolvesFromSpecies
+    evolves_from_species: NamedApiResource
     flavor_text_entries: [FlavorTextEntry]
     form_descriptions: [FormDescription]
     forms_switchable: Boolean
     gender_rate: Int
     genera: [Genus]
-    generation: Generation
-    growth_rate: GrowthRate
-    habitat: Habitat
+    generation: NamedApiResource
+    growth_rate: NamedApiResource
+    habitat: NamedApiResource
     has_gender_differences: Boolean
     hatch_counter: Int
     id: Int
@@ -124,7 +69,7 @@ const pokemonSpeciesTypeDefs = gql`
     is_mythical: Boolean
     name: String
     names: [NameEntry]
-    shape: Shape
+    shape: NamedApiResource
     varieties: [Variety]
   }
 

@@ -1,12 +1,19 @@
 const { gql } = require("apollo-server-express");
 const User = require("../../models/user/user.model");
+const { getCache, setCache } = require("../../redis");
 
 const userResolvers = {
   Query: {
     users: async () => {
       return await User.find({});
     },
-    user: async (_, { email }) => await User.findOne({ email }),
+    user: async (_, { email }) => {
+      return getCache(`user:${email}`, async () => {
+        const user = await User.findOne({ email });
+        setCache(`user:${email}`, user);
+        return user;
+      });
+    },
   },
   Mutation: {
     createUser: async (_, { email }) => {
