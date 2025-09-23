@@ -9,10 +9,6 @@ const clientOptions = {
     strict: true,
     deprecationErrors: true,
   },
-  tls: process.env.NODE_ENV === "production", // Enable TLS in production
-  tlsAllowInvalidCertificates: false,
-  retryWrites: true,
-  w: "majority",
 };
 
 async function connectToMongo() {
@@ -20,7 +16,7 @@ async function connectToMongo() {
     await mongoose.connect(MONGO_URL, clientOptions);
     await mongoose.connection.db.admin().command({ ping: 1 });
     console.log(
-      ":: MongoDB - Pinged your deployment. You successfully connected to MongoDB!"
+      `:: MongoDB - Pinged your deployment at ${MONGO_URL}. You successfully connected to MongoDB!`
     );
   } catch (error) {
     console.error(":: MongoDB - Connection failed:", error.message);
