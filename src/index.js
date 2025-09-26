@@ -14,6 +14,10 @@ async function run() {
   const app = getExpressServer();
   server.applyMiddleware({ app });
 
+  // Mark Apollo as ready for the health check
+  app.locals = app.locals || {};
+  app.locals.apolloReady = true;
+
   app.listen(PORT, () => {
     console.log(
       `:: Server ready at http://localhost:${PORT}${server.graphqlPath} in ${ENVIRONMENT}`
