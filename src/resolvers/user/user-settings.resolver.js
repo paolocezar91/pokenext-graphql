@@ -24,11 +24,23 @@ const userSettingsResolvers = {
   Mutation: {
     upsertUserSettings: async (_, { input }, ctx) => {
       const { userId, ...rest } = input;
-      const { user } = ctx;
-      const foundUser = await User.findOne({ _id: userId });
+      const { user } = ctx || {};
 
-      if (userId !== foundUser.id || user.email !== foundUser.email) {
-        throw "Not authorized";
+      // Defensive checks: ensure we have an authenticated user in context
+      if (!user) {
+        // No user in context — unauthorized
+        throw "Not authorized - no user";
+      }
+
+      const foundUser = await User.findOne({ _id: userId });
+      console.log(user, foundUser);
+      if (!foundUser) {
+        throw "User not found";
+      }
+
+      // Compare both id and email to make sure the token matches the requested user
+      if (!user.email || user.email !== foundUser.email) {
+        throw "Not authorized - emails don't match";
       }
 
       const update = {

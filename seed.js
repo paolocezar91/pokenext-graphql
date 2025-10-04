@@ -5,7 +5,7 @@ const readline = require("readline");
 const dataDir = path.join(__dirname, "./data/api/v2");
 // const dataDir = path.join(__dirname, '../pokenext-express/data/api/v2');
 const dotenv = require("dotenv");
-dotenv.config();
+dotenv.config({ path: ".env" });
 const MONGO_URL = process.env.MONGO_URL;
 const DB_NAME = process.env.DB_NAME;
 
@@ -96,11 +96,14 @@ promptResource();
 
 async function seed(rd, ra) {
   // --- MongoDB connection and seeding ---
-  const loadingInterval = startLoading(`Seeding resources...`);
+  const loadingInterval = startLoading(`Seeding resources...\n`);
   const client = new MongoClient(MONGO_URL);
   try {
+    console.log("Connecting to MongoDB...");
     await client.connect();
+    console.log("Connected!");
     const db = client.db(DB_NAME);
+    console.log("Seeding...");
     await db.collection(ra).insertMany(rd);
     stopLoading(loadingInterval, "Data was seeded!            ");
   } catch (err) {
