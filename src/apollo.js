@@ -58,6 +58,7 @@ async function getApolloServer() {
       if (token) {
         try {
           const secret = process.env.JWT_SECRET;
+          console.log({ secret });
           const payload = require("jsonwebtoken").verify(token, secret);
           // Debug: print token payload so we can confirm the token maps to user
           console.log(":: Apollo - Token payload:", payload);
