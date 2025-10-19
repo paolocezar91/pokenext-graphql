@@ -42,10 +42,7 @@ async function getApolloServer() {
 
       // Debug: show incoming Authorization header for troubleshooting
       try {
-        console.log(
-          ":: Apollo - Incoming Authorization:",
-          req.headers.authorization
-        );
+        console.log(":: Apollo - Headers:", req.headers);
       } catch {
         // ignore
       }
