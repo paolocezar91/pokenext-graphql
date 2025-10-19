@@ -40,13 +40,6 @@ async function getApolloServer() {
       // Apply rate limiting
       limiter(req, {}, () => {});
 
-      // Debug: show incoming Authorization header for troubleshooting
-      try {
-        console.log(":: Apollo - Headers:", req.headers);
-      } catch {
-        // ignore
-      }
-
       const authHeader = req.headers.authorization || "";
       const token = authHeader.startsWith("Bearer ")
         ? authHeader.slice(7)
@@ -55,10 +48,8 @@ async function getApolloServer() {
       if (token) {
         try {
           const secret = process.env.JWT_SECRET;
-          console.log({ secret });
           const payload = require("jsonwebtoken").verify(token, secret);
           // Debug: print token payload so we can confirm the token maps to user
-          console.log(":: Apollo - Token payload:", payload);
           return { userId: payload.id, user: payload };
         } catch (error) {
           console.log(":: Apollo - Invalid token:", error.message);
